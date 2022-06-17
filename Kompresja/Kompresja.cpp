@@ -9,30 +9,18 @@ using namespace std;
 
 class node {
 public:
-    string Label;
+    std::basic_string<char, std::char_traits<char>, std::allocator<char>> Label;
     int Count;
+    node* Left;
+    node* Right;
 
-    node()
-    {
+    node() {}
 
-    }
-
-    node(string label, int value)
-    {
-        Label = label;
-        Count = value;
-    }
-
-    node(string label, int value, node*n0, node* n1)
+    node(std::string label, int value, node* left = NULL, node* right = NULL) : Left(left), Right(right)
     {
         Label = label;
         Count = value;
-        Left = n0;
-        Right = n1;
     }
-
-    node *Left;
-    node *Right;
 };
 
 string readInputFile()
@@ -157,11 +145,20 @@ int main()
 
     for (int i = 0; testMinHeapify.size() > 1; i++)
     {
-        auto n0 = extractMin(testMinHeapify);
-        auto n1 = extractMin(testMinHeapify);
-        auto mergedNode = node(n0.Label.append(n1.Label), n0.Count + n1.Count, &n0, &n1);
+        int count = 0;
+        auto n = node();
+        node n0 = extractMin(testMinHeapify);
+        count += n0.Count;
+        n.Left = new node(n0.Label, n0.Count, n0.Left, n0.Right);
+        node n1 = extractMin(testMinHeapify);
+        n.Right = new node(n1.Label, n1.Count, n1.Left, n1.Right);
+        count += n1.Count;
+        auto labelVal = n0.Label.append(n1.Label);
 
-        testMinHeapify.push_back(mergedNode);
+        n.Label = labelVal;
+        n.Count = count;
+
+        testMinHeapify.push_back(n);
         buildMinHeap(testMinHeapify);
     }
 
