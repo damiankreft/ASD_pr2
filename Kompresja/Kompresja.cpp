@@ -10,6 +10,7 @@
 
 using namespace std;
 using namespace Nodes;
+
 node::node() { }
 node::node(std::string label, int value, node* left, node* right) : Left(left), Right(right)
 {
@@ -111,7 +112,6 @@ node extractMin(vector<node>& arr)
 
     iter_swap(minimumIt, --arr.end());
     auto extractedElement = arr.at(arr.size() - 1);
-    //node elemToReturn = node(extractedElement.Label, extractedElement.Count, extractedElement.Left, extractedElement.Right);
     node elemToReturn = extractedElement;
 
     arr.resize(arr.size() - 1);
@@ -137,13 +137,11 @@ string getPath(node nodeToSearchIn, char character)
 {
     std::string pathToBuild;
 
-    //if (nodeToSearchIn.Left != NULL && nodeToSearchIn.Left->Label.find("B") != string::npos)
     if (nodeToSearchIn.Left != NULL && nodeToSearchIn.Left->Label.find(character) != string::npos)
     {
         pathToBuild += '0';
         pathToBuild += getPath(*nodeToSearchIn.Left, character);
     }
-    //else if (nodeToSearchIn.Right != NULL && nodeToSearchIn.Right->Label.find("B") != string::npos)
     else if (nodeToSearchIn.Right != NULL && nodeToSearchIn.Right->Label.find(character) != string::npos)
     {
         pathToBuild += '1';
@@ -156,13 +154,7 @@ string getPath(node nodeToSearchIn, char character)
 int main() 
 {
     vector<node> testMinHeapify = vector<node>();
-    testMinHeapify.push_back(node("B", 1));
-    testMinHeapify.push_back(node("a", 7));
-    testMinHeapify.push_back(node("r", 5));
-    testMinHeapify.push_back(node("b", 3));
-    testMinHeapify.push_back(node(" ", 2));
-    testMinHeapify.push_back(node("m", 1));
-    //initializeCollection(testMinHeapify, getWeights(readInputFile()));
+    initializeCollection(testMinHeapify, getWeights(readInputFile()));
 
     // Do testu
     for (int i = 0; i < testMinHeapify.size(); i++)
@@ -184,10 +176,6 @@ int main()
         node n1 = extractMin(testMinHeapify);
         n.Right = new node(n1.Label, n1.Count, n1.Left, n1.Right);
         count += n1.Count;
-    /*    if (n.Left->Count > n.Right->Count)
-        {
-            swap(n.Left, n.Right);
-        }*/
         auto labelVal = n.Left->Label + n.Right->Label;
 
         n.Label = labelVal;
@@ -208,7 +196,7 @@ int main()
     auto charactersCodes = createCharactersMap(testMinHeapify);
     for (auto it = charactersCodes.begin(); it != charactersCodes.end(); it++)
     {
-        std::cout << "Key: " << it->first << ", Value: " << it->second << endl;
+        std::cout << "Key: \"" << it->first << "\", Value: " << it->second << endl;
     }
     // Koniec testu
 }
