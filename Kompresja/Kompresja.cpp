@@ -13,6 +13,7 @@ public:
     int Count;
     node* Left;
     node* Right;
+    node* Root;
 
     node() {}
 
@@ -118,8 +119,39 @@ node extractMin(vector<node>& arr)
 
     iter_swap(minimumIt, --arr.end());
     auto extractedElement = arr.at(arr.size() - 1);
+    //node elemToReturn = node(extractedElement.Label, extractedElement.Count, extractedElement.Left, extractedElement.Right);
+    node elemToReturn = extractedElement;
+
     arr.resize(arr.size() - 1);
-    return extractedElement;
+
+    return elemToReturn;
+}
+
+map<char, string> createCharactersMap(vector<node>& arr)
+{
+    map<char, string> dict;
+
+    
+
+    return dict;
+}
+
+string getPath(vector<node>& arr, node nodeToSearchIn)
+{
+    std::string pathToBuild;
+
+    if (nodeToSearchIn.Left != NULL && nodeToSearchIn.Left->Label.find("B") != string::npos)
+    {
+        pathToBuild += '0';
+        pathToBuild += getPath(arr, *nodeToSearchIn.Left);
+    }
+    else if (nodeToSearchIn.Right != NULL && nodeToSearchIn.Right->Label.find("B") != string::npos)
+    {
+        pathToBuild += '1';
+        pathToBuild += getPath(arr, *nodeToSearchIn.Right);
+    }
+
+    return pathToBuild;
 }
 
 int main() 
@@ -153,11 +185,14 @@ int main()
         node n1 = extractMin(testMinHeapify);
         n.Right = new node(n1.Label, n1.Count, n1.Left, n1.Right);
         count += n1.Count;
-        auto labelVal = n0.Label.append(n1.Label);
+        if (n.Left->Count > n.Right->Count)
+        {
+            swap(n.Left, n.Right);
+        }
+        auto labelVal = n.Left->Label + n.Right->Label;
 
         n.Label = labelVal;
         n.Count = count;
-
         testMinHeapify.push_back(n);
         buildMinHeap(testMinHeapify);
     }
@@ -168,5 +203,13 @@ int main()
     {
         std::cout << "\"" << testMinHeapify[i].Label << "\": " << testMinHeapify[i].Count << ", ";
     }
+
+    std::string myResult;
+    myResult = getPath(testMinHeapify, testMinHeapify[0]);
+
+    // algorytm DFS do przeszukiwania drzewa
+    // https://stackoverflow.com/questions/34406972/how-to-traverse-a-huffman-tree-recursively-in-search-for-an-specific-element
+
+    createCharactersMap(testMinHeapify);
     // Koniec testu
 }
