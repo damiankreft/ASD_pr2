@@ -5,24 +5,17 @@
 #include <map>
 #include <algorithm>
 
+#include "Kompresja.h"
+#include "Node.h"
+
 using namespace std;
-
-class node {
-public:
-    std::basic_string<char, std::char_traits<char>, std::allocator<char>> Label;
-    int Count;
-    node* Left;
-    node* Right;
-    node* Root;
-
-    node() {}
-
-    node(std::string label, int value, node* left = NULL, node* right = NULL) : Left(left), Right(right)
-    {
-        Label = label;
-        Count = value;
-    }
-};
+using namespace Nodes;
+node::node() { }
+node::node(std::string label, int value, node* left, node* right) : Left(left), Right(right)
+{
+    Label = label;
+    Count = value;
+}
 
 string readInputFile()
 {
@@ -30,7 +23,6 @@ string readInputFile()
     std::stringstream buffer;
     buffer << t.rdbuf();
     return buffer.str();
-
 }
 
 void minHeapify(vector<node>& arr, int currentSize, int i)
@@ -130,25 +122,32 @@ node extractMin(vector<node>& arr)
 map<char, string> createCharactersMap(vector<node>& arr)
 {
     map<char, string> dict;
-
-    
+    auto mergedLabels = arr[0].Label;
+    auto rootNode = arr[0];
+    for (int i = 0; i < mergedLabels.length(); i++)
+    {
+        auto charToFind = mergedLabels[i];
+        dict.insert(pair(mergedLabels[i], getPath(arr[0], charToFind)));
+    }
 
     return dict;
 }
 
-string getPath(vector<node>& arr, node nodeToSearchIn)
+string getPath(node nodeToSearchIn, char character)
 {
     std::string pathToBuild;
 
-    if (nodeToSearchIn.Left != NULL && nodeToSearchIn.Left->Label.find("B") != string::npos)
+    //if (nodeToSearchIn.Left != NULL && nodeToSearchIn.Left->Label.find("B") != string::npos)
+    if (nodeToSearchIn.Left != NULL && nodeToSearchIn.Left->Label.find(character) != string::npos)
     {
         pathToBuild += '0';
-        pathToBuild += getPath(arr, *nodeToSearchIn.Left);
+        pathToBuild += getPath(*nodeToSearchIn.Left, character);
     }
-    else if (nodeToSearchIn.Right != NULL && nodeToSearchIn.Right->Label.find("B") != string::npos)
+    //else if (nodeToSearchIn.Right != NULL && nodeToSearchIn.Right->Label.find("B") != string::npos)
+    else if (nodeToSearchIn.Right != NULL && nodeToSearchIn.Right->Label.find(character) != string::npos)
     {
         pathToBuild += '1';
-        pathToBuild += getPath(arr, *nodeToSearchIn.Right);
+        pathToBuild += getPath(*nodeToSearchIn.Right, character);
     }
 
     return pathToBuild;
@@ -185,10 +184,10 @@ int main()
         node n1 = extractMin(testMinHeapify);
         n.Right = new node(n1.Label, n1.Count, n1.Left, n1.Right);
         count += n1.Count;
-        if (n.Left->Count > n.Right->Count)
+    /*    if (n.Left->Count > n.Right->Count)
         {
             swap(n.Left, n.Right);
-        }
+        }*/
         auto labelVal = n.Left->Label + n.Right->Label;
 
         n.Label = labelVal;
@@ -205,11 +204,18 @@ int main()
     }
 
     std::string myResult;
-    myResult = getPath(testMinHeapify, testMinHeapify[0]);
 
-    // algorytm DFS do przeszukiwania drzewa
-    // https://stackoverflow.com/questions/34406972/how-to-traverse-a-huffman-tree-recursively-in-search-for-an-specific-element
-
-    createCharactersMap(testMinHeapify);
+    auto charactersCodes = createCharactersMap(testMinHeapify);
+    for (auto it = charactersCodes.begin(); it != charactersCodes.end(); it++)
+    {
+        std::cout << "Key: " << it->first << ", Value: " << it->second << endl;
+    }
     // Koniec testu
 }
+
+
+/* 
+Notatki:
+// algorytm DFS do przeszukiwania drzewa
+// https://stackoverflow.com/questions/34406972/how-to-traverse-a-huffman-tree-recursively-in-search-for-an-specific-element - finalnie nie skorzysta³em - a przynajmniej o tym nie wiem :winking:
+*/
