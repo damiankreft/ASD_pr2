@@ -1,3 +1,0 @@
-﻿  Kompresja.cpp
-C:\Users\damia\source\repos\Kompresja\Kompresja\Kompresja.cpp(75,38): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-  Kompresja.vcxproj -> C:\Users\damia\source\repos\Kompresja\x64\Debug\Kompresja.exe
