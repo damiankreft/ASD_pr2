@@ -28,7 +28,7 @@ node::node(std::string label, int value, node* left, node* right) : Left(left), 
 
 string readInputFile()
 {
-    std::ifstream t = ifstream("input.txt");
+    std::ifstream t = ifstream("inputOld.txt");
     std::stringstream buffer;
     buffer << t.rdbuf();
     t.close();
@@ -142,6 +142,18 @@ map<char, string> createCharactersMap(vector<node>& arr)
     return dict;
 }
 
+void saveCharactersMapToFile(map<char, string> characterCodes)
+{
+    ofstream codesFile("huffmanCodesMap.txt");
+
+    for (auto it = characterCodes.begin(); it != characterCodes.end(); it++)
+    {
+        codesFile << "\"" << it->first << "\": \"" << it->second << "\",\n";
+    }
+
+    codesFile.close();
+}
+
 string getPath(node nodeToSearchIn, char character)
 {
     std::string pathToBuild;
@@ -249,6 +261,7 @@ int main()
     }*/
 
     auto charactersCodes = createCharactersMap(testMinHeapify);
+    saveCharactersMapToFile(charactersCodes);
     compress(charactersCodes);
     //for (auto it = charactersCodes.begin(); it != charactersCodes.end(); it++)
     //{

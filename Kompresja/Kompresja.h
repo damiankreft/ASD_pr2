@@ -11,5 +11,6 @@ string CreateCompressedString(string input, map<char, string> codesMap);
 void compress(map<char, string> codesMap);
 std::string readInputFile();
 map<char, string> createCharactersMap(vector<node>& arr);
+void saveCharactersMapToFile(map<char, string> characterCodes);
 void buildMinHeap(vector<node>& arr);
 void initializeCollection(vector<node>& arr, map<char, int> map);
