@@ -28,7 +28,7 @@ node::node(std::string label, int value, node* left, node* right) : Left(left), 
 
 string readInputFile()
 {
-    std::ifstream t = ifstream("inputOld.txt");
+    std::ifstream t = ifstream("input.txt");
     std::stringstream buffer;
     buffer << t.rdbuf();
     t.close();
