@@ -8,6 +8,14 @@
 #include "Kompresja.h"
 #include "Node.h"
 
+/// <summary>
+/// Definicja 'Byte' z wielkim 'B', bo namespace std zawiera 'byte'
+/// </summary>
+typedef unsigned char Byte;
+Byte setBit(Byte x, unsigned int index) {
+    return x | (1 << index);
+}
+
 using namespace std;
 using namespace Nodes;
 
@@ -23,6 +31,7 @@ string readInputFile()
     std::ifstream t = ifstream("input.txt");
     std::stringstream buffer;
     buffer << t.rdbuf();
+    t.close();
     return buffer.str();
 }
 
@@ -151,16 +160,64 @@ string getPath(node nodeToSearchIn, char character)
     return pathToBuild;
 }
 
+void writeBinaryFile(string compressedString)
+{
+    ofstream outputFile("output.bin", ios::out | ios::binary);
+
+    if (!outputFile.is_open())
+    {
+        return;
+    }
+
+    // Workaround bo architektura nie pozwala zapisywac niczego mniejszego niz 8 bitow, dlatego uzywamy 8-bitowego bufora
+    Byte bufferWorkaround = 0;
+    int index = 0;
+    for (int i = 0; i < compressedString.length(); i++)
+    {
+        if (compressedString[i] == '1')
+        {
+            bufferWorkaround = setBit(bufferWorkaround, index);
+        }
+        index++;
+        if (index == 8)
+        {
+            outputFile.write(reinterpret_cast<char*>(&bufferWorkaround), sizeof(bufferWorkaround));
+            bufferWorkaround = 0;
+            index = 0;
+        }
+    }
+
+    outputFile.close();
+}
+
+string CreateCompressedString(string input, map<char, string> codesMap)
+{
+    string compressedString = "";
+    for (int i = 0; i < input.length(); i++)
+    {
+        compressedString += codesMap[input[i]];
+    }
+
+    return compressedString;
+}
+
+void compress(map<char, string> codesMap)
+{
+    string input = readInputFile();
+    string compressedString = CreateCompressedString(input, codesMap);
+    writeBinaryFile(compressedString);
+}
+
 int main() 
 {
     vector<node> testMinHeapify = vector<node>();
     initializeCollection(testMinHeapify, getWeights(readInputFile()));
 
     // Do testu
-    for (int i = 0; i < testMinHeapify.size(); i++)
-    {
-        std::cout << "\"" << testMinHeapify[i].Label << "\": " << testMinHeapify[i].Count << ", ";
-    }
+    //for (int i = 0; i < testMinHeapify.size(); i++)
+    //{
+    //    std::cout << "\"" << testMinHeapify[i].Label << "\": " << testMinHeapify[i].Count << ", ";
+    //}
     // Koniec testu
 
 
@@ -185,19 +242,18 @@ int main()
     }
 
     // do testu
-    std::cout << endl << "Heap after extractions " << std::endl;
+    /*std::cout << endl << "Heap after extractions " << std::endl;
     for (int i = 0; i < testMinHeapify.size(); i++)
     {
         std::cout << "\"" << testMinHeapify[i].Label << "\": " << testMinHeapify[i].Count << ", ";
-    }
-
-    std::string myResult;
+    }*/
 
     auto charactersCodes = createCharactersMap(testMinHeapify);
-    for (auto it = charactersCodes.begin(); it != charactersCodes.end(); it++)
-    {
-        std::cout << "Key: \"" << it->first << "\", Value: " << it->second << endl;
-    }
+    compress(charactersCodes);
+    //for (auto it = charactersCodes.begin(); it != charactersCodes.end(); it++)
+    //{
+    //    std::cout << "Key: \"" << it->first << "\", Value: " << it->second << endl;
+    //}
     // Koniec testu
 }
 
@@ -206,4 +262,6 @@ int main()
 Notatki:
 // algorytm DFS do przeszukiwania drzewa
 // https://stackoverflow.com/questions/34406972/how-to-traverse-a-huffman-tree-recursively-in-search-for-an-specific-element - finalnie nie skorzysta³em - a przynajmniej o tym nie wiem :winking:
+
+// https://stackoverflow.com/questions/24181172/is-it-better-to-use-char-or-unsigned-char-array-for-storing-raw-data
 */
